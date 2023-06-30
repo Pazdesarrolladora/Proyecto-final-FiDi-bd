@@ -17,6 +17,7 @@ class Usuario(db.Model):
     id_usuario_favorito = db.Column(db.Integer, nullable=False)
     id_habilidades = db.Column(db.Integer, nullable=False)
     id_interes = db.Column(db.Integer, nullable=False)
+    comentarios = db.relationship("Comentario")
 
     def serialize(self):
         return {
