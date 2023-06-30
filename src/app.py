@@ -6,7 +6,12 @@ from flask_cors import CORS
 from models import db
 
 from models.role import Role
-from models.user import User
+from models.usuario import Usuario
+from models.comentario import Comentario
+from models.guardado import Guardado
+from models.match import Match
+from models.noticia import Noticia
+
 
 from dotenv import load_dotenv
 from rutas import api
