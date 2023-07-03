@@ -5,13 +5,16 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from models import db
 
-from models.role import Role
-from models.usuario import Usuario
+# Import de las tablas
+from models.chat import Chat
 from models.comentario import Comentario
 from models.guardado import Guardado
+from models.habilidad import Habilidad
 from models.match import Match
+from models.mensaje import Mensaje
 from models.noticia import Noticia
-
+from models.role import Role
+from models.usuario import Usuario
 
 from dotenv import load_dotenv
 from rutas import api

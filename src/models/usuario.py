@@ -11,13 +11,17 @@ class Usuario(db.Model):
     descripcion = db.Column(db.String(500))
     valoracion = db.Column(db.Float, nullable=False)
     tipo_registro = db.Column(db.Integer, nullable=False)
-    permission = db.Column(db.Integer, nullable=False)
     api_key = db.Column(db.String, nullable=False)
-    foto_usuario = db.Column(db.String, nullable=False)
-    id_usuario_favorito = db.Column(db.Integer, nullable=False)
-    id_habilidades = db.Column(db.Integer, nullable=False)
-    id_interes = db.Column(db.Integer, nullable=False)
+    foto_usuario = db.Column(db.String)
+    id_usuario_favorito = db.Column(db.Integer, db.ForeignKey("usuarios.id"))
+    id_habilidades = db.Column(db.Integer, db.ForeignKey("habilidades.id"), nullable=False)
+    id_interes = db.Column(db.Integer, db.ForeignKey("habilidades.id"), nullable=False)
+    id_roles = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=False)
     comentarios = db.relationship("Comentario")
+    guardados = db.relationship("Guardado", backref="guardadosUsuario")
+    habilidades = db.relationship("Habilidad", backref="habilidadesUsuario")
+    intereses = db.relationship("Habilidad", backref="interesesUsuario")
+    mensajes = db.relationship("Mensaje", backref="mensajesUsuario")
 
     def serialize(self):
         return {
@@ -30,13 +34,34 @@ class Usuario(db.Model):
             "descripcion": self.descripcion,
             "valoracion": self.valoracion,
             "tipo_registro": self.tipo_registro,
-            "permission": self.permission,
             "api_key": self.api_key,
             "foto_usuario": self.foto_usuario,
             "id_usuario_favorito": self.id_usuario_favorito,
             "id_habilidades": self.id_habilidades,
-            "id_interes": self.id_interes
+            "id_interes": self.id_interes,
+            "id_roles": self.id_roles
         }
+    
+    def serialize_with_roles(self):
+        return {
+            "id": self.id,
+            "correo": self.correo,
+            "password": self.password,
+            "nombre": self.nombre,
+            "edad": self.edad,
+            "oficio": self.oficio,
+            "descripcion": self.descripcion,
+            "valoracion": self.valoracion,
+            "tipo_registro": self.tipo_registro,
+            "api_key": self.api_key,
+            "foto_usuario": self.foto_usuario,
+            "id_usuario_favorito": self.id_usuario_favorito,
+            "id_habilidades": self.id_habilidades,
+            "id_interes": self.id_interes,
+            "id_roles": self.id_roles,
+            "role": self.role.seralize()
+        }
+
 
     def save(self):
         db.session.add(self)
