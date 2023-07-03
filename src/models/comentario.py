@@ -4,16 +4,19 @@ from datetime import datetime
 class Comentario(db.Model):
     __tablename__ = 'comentarios'
     id = db.Column(db.Integer, primary_key=True)
-    mensaje = db.Column(db.String(500))
+    mensaje = db.Column(db.String(500), nullable=False)
     creacion_comentario = db.Column(db.DateTime(), default=datetime.now)
-    id_noticia = db.Column(db.Integer, nullable=False)
-    id_usuario = db.Column(db.Integer, db.ForeignKey("usuarios.id"))
+    id_usuario = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)
+    id_noticia = db.Column(db.Integer, db.ForeignKey("noticias.id") , nullable=False)
     
     def serialize(self):
         return {
             "id": self.id,
             "mensaje": self.mensaje,
-            "creacion_comentario": self.creacion_comentario
+            "creacion_comentario": self.creacion_comentario,
+            "id_usuario": self.id_usuario,
+            "usuario": self.usuario.serialize(),
+            "id_noticia": self.id_noticia
         }
     
     def save(self):

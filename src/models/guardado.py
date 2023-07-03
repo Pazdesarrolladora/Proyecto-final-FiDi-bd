@@ -2,13 +2,14 @@ from models import db
 
 class Guardado(db.Model):
     __tablename__ = 'guardados'
-    id = db.Column(db.Integer, primary_key=True)
-    id_noticia = db.Column(db.Integer) #Falta relacion a tabla Noticia
-    id_usuario = db.Column(db.Integer) #Falta relacion a tabla Usuario
+    id_noticia = db.Column(db.Integer,db.ForeignKey("noticias.id"), primary_key=True) 
+    id_usuario = db.Column(db.Integer,db.ForeignKey("usuarios.id") , primary_key=True)
+    noticia = db.relationship("Noticia", back_populates="guardado")
     
     def serialize(self):
         return {
-            "id": self.id
+            "id_noticia": self.id_noticia,
+            "id_usuario": self.id_usuario
         }
         
     def save(self):

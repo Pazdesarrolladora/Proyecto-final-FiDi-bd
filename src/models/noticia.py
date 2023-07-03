@@ -8,7 +8,9 @@ class Noticia(db.Model):
     creacion_noticia = db.Column(db.DateTime, default=datetime.now)
     foto = db.Column(db.String(500))
     descripcion = db.Column(db.String(3000))
-    id_comentario = db.Column(db.Integer) #Falta relacion a tabla Comentarios
+    comentario = db.relationship("Comentario", backref="noticia")
+    guardado = db.relationship("Guardado", back_populates="noticia", uselist=False)
+
     
     def serialize(self):
         return {
