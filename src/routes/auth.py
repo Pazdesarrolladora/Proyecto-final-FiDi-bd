@@ -8,18 +8,18 @@ api = Blueprint('api_auth', __name__)
 @api.route('/login', methods=['POST'])
 def login():
     
-    username = request.json.get('username')
+    correo = request.json.get('correo')
     password = request.json.get('password')
     
-    if not username: return jsonify({ "username": "Username is required!"}), 400
+    if not correo: return jsonify({ "correo": "El correo es requerido!"}), 400
     if not password: return jsonify({ "password": "Password is required!"}), 400
     
-    userFound = Usuario.query.filter_by(username=username).first()
+    userFound = Usuario.query.filter_by(correo=correo).first()
     
-    if not userFound: return jsonify({ "message": "username/password is incorrect"}), 401
+    if not userFound: return jsonify({ "message": "correo/password is incorrect"}), 401
     
     if not check_password_hash(userFound.password, password):
-        return jsonify({ "message": "username/password is incorrect"}), 401
+        return jsonify({ "message": "El correo o password es incorrecto"}), 401
     
     acces_token = create_access_token(identity=userFound["id"])
     

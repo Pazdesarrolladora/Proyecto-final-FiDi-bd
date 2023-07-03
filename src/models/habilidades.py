@@ -2,7 +2,7 @@ from models import db
 from datetime import datetime
 
 class Habilidades(db.Model):
-    __tablename__ = 'comentarios'
+    __tablename__ = 'habilidades'
     id = db.Column(db.Integer, primary_key=True)
     mensaje = db.Column(db.String(500))
         

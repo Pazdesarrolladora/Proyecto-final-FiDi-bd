@@ -1,4 +1,6 @@
 import os
+import cloudinary
+import cloudinary.uploader
 from flask import Flask, jsonify
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
@@ -23,6 +25,7 @@ from rutas import api
 from routes.auth import api as api_auth
 from routes.users import api as api_users
 from routes.roles import api as api_roles
+from routes.noticias import api as api_noticias
 
 load_dotenv()
 
@@ -38,9 +41,16 @@ Migrate(app, db)
 jwt = JWTManager(app)
 CORS(app)
 
+cloudinary.config( 
+  cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME'), 
+  api_key = os.getenv('CLOUDINARY_API_KEY'), 
+  api_secret = os.getenv('CLOUDINARY_API_SECRET'), 
+)
+
 app.register_blueprint(api_auth, url_prefix="/api")
 app.register_blueprint(api_roles, url_prefix="/api")
 app.register_blueprint(api_users, url_prefix="/api")
+app.register_blueprint(api_noticias, url_prefix="/api")
 
 
 @app.route('/')

@@ -8,9 +8,9 @@ class Noticia(db.Model):
     creacion_noticia = db.Column(db.DateTime, default=datetime.now)
     foto = db.Column(db.String(500))
     descripcion = db.Column(db.String(3000))
+    id_imagen = db.Column(db.Integer, db.ForeignKey("imagenes.id"), nullable=False)
     comentario = db.relationship("Comentario", backref="noticia")
     guardado = db.relationship("Guardado", back_populates="noticia", uselist=False)
-    imagenNoticia = db.relationship("Imagen", back_populates="noticiaImagen")
 
     
     def serialize(self):
