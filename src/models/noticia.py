@@ -10,6 +10,7 @@ class Noticia(db.Model):
     descripcion = db.Column(db.String(3000))
     comentario = db.relationship("Comentario", backref="noticia")
     guardado = db.relationship("Guardado", back_populates="noticia", uselist=False)
+    imagenNoticia = db.relationship("Imagen", back_populates="noticiaImagen")
 
     
     def serialize(self):
