@@ -10,6 +10,7 @@ from models.chat import Chat
 from models.comentario import Comentario
 from models.guardado import Guardado
 from models.habilidad import Habilidad
+from models.imagen import Imagen
 from models.match import Match
 from models.mensaje import Mensaje
 from models.noticia import Noticia

@@ -5,6 +5,7 @@ class Guardado(db.Model):
     id_noticia = db.Column(db.Integer,db.ForeignKey("noticias.id"), primary_key=True) 
     id_usuario = db.Column(db.Integer,db.ForeignKey("usuarios.id") , primary_key=True)
     noticia = db.relationship("Noticia", back_populates="guardado")
+    usuarioGuardado = db.relationship("Usuario", back_populates="guardado")
     
     def serialize(self):
         return {
