@@ -8,7 +8,7 @@ class Imagen(db.Model):
     id_publico = db.Column(db.Integer)
     activo = db.Column(db.Boolean, default=True)
     usuarioImagen = db.relationship("Usuario", back_populates="imagenUsuario", uselist=False)
-    noticiaImagen = db.relationship("Usuario", back_populates="imagenNoticia", uselist=False)
+    noticiaImagen = db.relationship("Usuario", backref="imagenNoticia", lazy=True)
 
     def serialize(self):
         return {
