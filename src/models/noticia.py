@@ -6,9 +6,8 @@ class Noticia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(120), nullable=False)
     creacion_noticia = db.Column(db.DateTime, default=datetime.now)
-    foto = db.Column(db.String(500))
     descripcion = db.Column(db.String(3000))
-    id_imagen = db.Column(db.Integer, db.ForeignKey("imagenes.id"), nullable=False)
+    src_imagen = db.Column(db.String(1000))
     comentario = db.relationship("Comentario", backref="noticia")
     guardado = db.relationship("Guardado", back_populates="noticia", uselist=False)
 
@@ -18,8 +17,8 @@ class Noticia(db.Model):
             "id": self.id,
             "titulo": self.titulo,
             "creacion_noticia": self.creacion_noticia,
-            "foto": self.foto,
-            "descripcion": self.descripcion
+            "descripcion": self.descripcion,
+            "src_imagen": self.src_imagen
         }
         
     #Crear funcion para serializar junto con los comentarios
