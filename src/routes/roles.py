@@ -4,6 +4,7 @@ api = Blueprint('api_roles', __name__)
 
 @api.route('/roles', methods=['GET'])
 def list_users():
+    #MODIFICAR
     return jsonify([
         { "id": 1, "name": "Admin" },
         { "id": 2, "name": "Employee" },

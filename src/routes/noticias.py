@@ -2,16 +2,21 @@ import cloudinary
 import cloudinary.uploader
 from flask import Blueprint, jsonify, request
 from models.imagen import Imagen
+from models.noticia import Noticia
 
 api = Blueprint('api_noticias', __name__)
 
-@api.route('/api/noticias/agregar', methods=['POST'])
+
+#Ruta para agregar una noticia
+@api.route('/administrar/agregarNoticia', methods=['POST'])
 def upload_image():
-    
-    title = request.form['title']
+
+    titulo = request.form['titulo']
+    descripcion = request.form['descripcion']
     image = None
     
-    if not title: return jsonify({"message": "Title is required!"}), 400
+    if not titulo: return jsonify({"message": "Titulo is required!"}), 400
+    if not descripcion: return jsonify({"message": "Descripcion is required!"}), 400
     if not 'image' in request.files: 
         return jsonify({"message": "Image is required!"}), 400
     else: 
@@ -20,12 +25,16 @@ def upload_image():
     response = cloudinary.uploader.upload(image, folder="imagenesFidi")
     
     if response:
-        
-        imagenNoticia = Imagen()
-        imagenNoticia.title = title
-        imagenNoticia.image_file = response['secure_url']
-        imagenNoticia.public_id = response['public_id']
-        imagenNoticia.active = True
-        imagenNoticia.save()
+        nuevaImagen = Imagen()
+        nuevaImagen.src_imagen = response['secure_url']
+        nuevaImagen.id_publico = response['public_id']
+        nuevaImagen.activo = True
+        nuevaImagen.save()
+
+        nuevaNoticia = Noticia()
+        nuevaNoticia.titulo = titulo
+        nuevaNoticia.descripcion = descripcion
+        nuevaNoticia.src_imagen = response['secure_url']
+        nuevaNoticia.save()
     
-    return jsonify({ "image": imagenNoticia.serialize(), "message": "Image uploaded successfully"}), 201
+    return jsonify({ "image": nuevaImagen.serialize(), "message": "Image uploaded successfully"}), 201

@@ -6,19 +6,18 @@ class Usuario(db.Model):
     correo = db.Column(db.String(200), nullable=False, unique=True)
     password = db.Column(db.String(50), nullable=False)
     nombre = db.Column(db.String(50), nullable=False)
-    edad = db.Column(db.Integer, nullable=False)
-    oficio = db.Column(db.String(200), nullable=False)
+    edad = db.Column(db.Integer)
+    oficio = db.Column(db.String(200))
     descripcion = db.Column(db.String(500))
     valoracion = db.Column(db.Float)
-    tipo_registro = db.Column(db.Integer, nullable=False)
+    tipo_registro = db.Column(db.Integer)
     api_key = db.Column(db.String)
+    src_imagen = db.Column(db.String(1000))
     id_usuario_favorito = db.Column(db.Integer, db.ForeignKey("usuarios.id"))
     id_habilidades = db.Column(db.Integer, db.ForeignKey("habilidades.id"), nullable=False)
     id_interes = db.Column(db.Integer, db.ForeignKey("habilidades.id"), nullable=False)
     id_roles = db.Column(db.Integer, db.ForeignKey("roles.id"), nullable=False, default=2)
-    id_imagen = db.Column(db.Integer, db.ForeignKey("imagenes.id"))
 
-    imagenUsuario = db.relationship("Imagen", back_populates="usuarioImagen")
     comentario = db.relationship("Comentario")
     guardado = db.relationship("Guardado", back_populates="usuarioGuardado", uselist=False)
     habilidades = db.relationship("Habilidad", foreign_keys=[id_habilidades])
@@ -37,7 +36,7 @@ class Usuario(db.Model):
             "valoracion": self.valoracion,
             "tipo_registro": self.tipo_registro,
             "api_key": self.api_key,
-            "foto_usuario": self.foto_usuario,
+            "src_imagen": self.src_imagen,
             "id_usuario_favorito": self.id_usuario_favorito,
             "id_habilidades": self.id_habilidades,
             "id_interes": self.id_interes,

@@ -3,18 +3,14 @@ from models import db
 class Imagen(db.Model):
     __tablename__ = "imagenes"
     id = db.Column(db.Integer, primary_key=True)
-    titulo = db.Column(db.Integer)
-    archivo_imagen = db.Column(db.String(120))
-    id_publico = db.Column(db.Integer)
+    src_imagen = db.Column(db.String(400))
+    id_publico = db.Column(db.String(200))
     activo = db.Column(db.Boolean, default=True)
-    usuarioImagen = db.relationship("Usuario", back_populates="imagenUsuario", uselist=False)
-    noticiaImagen = db.relationship("Usuario", backref="imagenNoticia", lazy=True)
 
     def serialize(self):
         return {
             "id": self.id,
-            "titulo": self.titulo,
-            "archivo_imagen": self.archivo_imagen,
+            "src_imagen": self.src_imagen,
             "id_publico": self.id_publico,
             "activo": self.activo
         }
