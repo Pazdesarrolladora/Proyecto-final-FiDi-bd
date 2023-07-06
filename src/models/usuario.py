@@ -1,5 +1,11 @@
 from models import db
 
+habilidad_usuario = db.Table("habilidad_usuario",
+    db.Column("id_usuario", db.ForeignKey("usuarios.id"), primary_key=True),
+    db.Column("id_habilidad", db.ForeignKey("habilidades.id"), primary_key=True),
+    db.Column("habilidadInteres", db.String),  # Puedes usar este campo para distinguir habilidades e intereses
+)
+
 class Usuario(db.Model):
     __tablename__ = 'usuarios'
     id = db.Column(db.Integer, primary_key=True)
@@ -14,14 +20,10 @@ class Usuario(db.Model):
     api_key = db.Column(db.String)
     src_imagen = db.Column(db.String(1000))
     id_usuario_favorito = db.Column(db.Integer, db.ForeignKey("usuarios.id"))
-    id_habilidades = db.Column(db.Integer, db.ForeignKey("habilidades.id"), nullable=False)
-    id_interes = db.Column(db.Integer, db.ForeignKey("habilidades.id"), nullable=False)
     id_roles = db.Column(db.Integer, db.ForeignKey("roles.id"), nullable=False, default=2)
-
+    habilidades = db.relationship("Habilidad", secondary=habilidad_usuario, backref="usuarios")
     comentario = db.relationship("Comentario")
     guardado = db.relationship("Guardado", back_populates="usuarioGuardado", uselist=False)
-    habilidades = db.relationship("Habilidad", foreign_keys=[id_habilidades])
-    intereses = db.relationship("Habilidad", foreign_keys=[id_interes])
     mensajes = db.relationship("Mensaje", backref="mensajesUsuario")
 
     def serialize(self):
@@ -38,8 +40,6 @@ class Usuario(db.Model):
             "api_key": self.api_key,
             "src_imagen": self.src_imagen,
             "id_usuario_favorito": self.id_usuario_favorito,
-            "id_habilidades": self.id_habilidades,
-            "id_interes": self.id_interes,
             "id_roles": self.id_roles
         }
     
@@ -57,8 +57,6 @@ class Usuario(db.Model):
             "api_key": self.api_key,
             "foto_usuario": self.foto_usuario,
             "id_usuario_favorito": self.id_usuario_favorito,
-            "id_habilidades": self.id_habilidades,
-            "id_interes": self.id_interes,
             "id_roles": self.id_roles,
             "role": self.role.seralize()
         }

@@ -11,6 +11,7 @@ api = Blueprint('api_noticias', __name__)
 @api.route('/administrar/agregarNoticia', methods=['POST'])
 def upload_image():
 
+    # Asignamos a una variable los valores rescatados del form, 
     titulo = request.form['titulo']
     descripcion = request.form['descripcion']
     image = None
@@ -37,4 +38,11 @@ def upload_image():
         nuevaNoticia.src_imagen = response['secure_url']
         nuevaNoticia.save()
     
-    return jsonify({ "image": nuevaImagen.serialize(), "message": "Image uploaded successfully"}), 201
+    return jsonify({ "image": nuevaImagen.serialize(), "message": "Noticia creada satisfactoriamente"}), 201
+
+@api.route('/administrar/modificarNoticia')
+def modify_notice():
+    noticias = Noticia.query.all() # [<User 1>, <User 2>]
+    noticias = list(map(lambda noticia: noticia.serialize(), noticias)) # [{"id": 1}, {"id": 2}]
+    
+    return jsonify(noticias), 200

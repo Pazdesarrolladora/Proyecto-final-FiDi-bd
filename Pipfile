@@ -12,6 +12,7 @@ flask-jwt-extended = "*"
 psycopg2-binary = "*"
 python-dotenv = "*"
 cloudinary = "*"
+flask-socketio = "*"
 
 [dev-packages]
 
