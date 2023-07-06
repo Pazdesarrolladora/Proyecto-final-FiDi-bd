@@ -5,6 +5,7 @@ from flask import Flask, jsonify
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+from flask_socketio import SocketIO, join_room, emit
 from models import db
 
 # Import de las tablas
@@ -26,6 +27,8 @@ from routes.auth import api as api_auth
 from routes.users import api as api_users
 from routes.roles import api as api_roles
 from routes.noticias import api as api_noticias
+from routes.chats import api as api_chats
+from routes.habilidades import api as api_habilidades
 
 load_dotenv()
 
@@ -40,6 +43,7 @@ db.init_app(app)
 Migrate(app, db)
 jwt = JWTManager(app)
 CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 cloudinary.config( 
   cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME'), 
@@ -51,11 +55,32 @@ app.register_blueprint(api_auth, url_prefix="/api")
 app.register_blueprint(api_roles, url_prefix="/api")
 app.register_blueprint(api_users, url_prefix="/api")
 app.register_blueprint(api_noticias, url_prefix="/api")
+app.register_blueprint(api_chats, url_prefix="/api")
+app.register_blueprint(api_habilidades, url_prefix="/api")
 
 
 @app.route('/')
 def main():
     return jsonify({ "message": "API REST With Flask"}), 200
+
+#Socket io no funciona aun
+
+@socketio.on('private_chat')
+def private_chat(data):
+    user1_id = data['user1_id']
+    user2_id = data['user2_id']
+    room = f"{user1_id}-{user2_id}"  # Sala única basada en los IDs de los usuarios
+
+    join_room(room)
+
+@socketio.on('private_message')
+def private_message(data):
+    sender_id = data['sender_id']
+    receiver_id = data['receiver_id']
+    message = data['message']
+    room = f"{sender_id}-{receiver_id}"  # La misma sala utilizada para la conversación privada
+
+    emit('message', {'sender': sender_id, 'message': message}, room=room)
 
 
 if __name__ == '__main__':
