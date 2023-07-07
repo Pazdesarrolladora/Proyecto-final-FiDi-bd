@@ -3,14 +3,14 @@ from models import db
 habilidad_usuario = db.Table("habilidad_usuario",
     db.Column("id_usuario", db.ForeignKey("usuarios.id"), primary_key=True),
     db.Column("id_habilidad", db.ForeignKey("habilidades.id"), primary_key=True),
-    db.Column("habilidadInteres", db.String),  # Puedes usar este campo para distinguir habilidades e intereses
+    db.Column("habilidadInteres", db.String)  # Puedes usar este campo para distinguir habilidades e intereses
 )
 
 class Usuario(db.Model):
     __tablename__ = 'usuarios'
     id = db.Column(db.Integer, primary_key=True)
     correo = db.Column(db.String(200), nullable=False, unique=True)
-    password = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String(200), nullable=False)
     nombre = db.Column(db.String(50), nullable=False)
     edad = db.Column(db.Integer)
     oficio = db.Column(db.String(200))
@@ -43,7 +43,7 @@ class Usuario(db.Model):
             "id_roles": self.id_roles
         }
     
-    def serialize_with_roles(self):
+    def serialize_with_habilidades(self):
         return {
             "id": self.id,
             "correo": self.correo,
@@ -55,12 +55,15 @@ class Usuario(db.Model):
             "valoracion": self.valoracion,
             "tipo_registro": self.tipo_registro,
             "api_key": self.api_key,
-            "foto_usuario": self.foto_usuario,
+            "src_imagen": self.src_imagen,
             "id_usuario_favorito": self.id_usuario_favorito,
             "id_roles": self.id_roles,
-            "role": self.role.seralize()
+            "role": self.role.seralize(),
+            "habilidades": self.get_habilidades()
         }
 
+    def get_habilidades(self):
+        return list(map(lambda habilidad: habilidad.serialize(), self.habilidades))
 
     def save(self):
         db.session.add(self)
