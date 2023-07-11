@@ -1,10 +1,5 @@
 from models import db
 
-habilidad_usuario = db.Table("habilidad_usuario",
-    db.Column("id_usuario", db.ForeignKey("usuarios.id"), primary_key=True),
-    db.Column("id_habilidad", db.ForeignKey("habilidades.id"), primary_key=True),
-    db.Column("habilidadInteres", db.String)  # Puedes usar este campo para distinguir habilidades e intereses
-)
 
 class Usuario(db.Model):
     __tablename__ = 'usuarios'
@@ -21,7 +16,7 @@ class Usuario(db.Model):
     src_imagen = db.Column(db.String(1000))
     id_usuario_favorito = db.Column(db.Integer, db.ForeignKey("usuarios.id"))
     id_roles = db.Column(db.Integer, db.ForeignKey("roles.id"), nullable=False, default=2)
-    habilidades = db.relationship("Habilidad", secondary=habilidad_usuario, backref="usuarios")
+    registros_habilidades = db.relationship("RegistroHabilidad", backref="usuario")
     comentario = db.relationship("Comentario")
     guardado = db.relationship("Guardado", back_populates="usuarioGuardado", uselist=False)
     mensajes = db.relationship("Mensaje", backref="mensajesUsuario")
@@ -43,7 +38,7 @@ class Usuario(db.Model):
             "id_roles": self.id_roles
         }
     
-    def serialize_with_habilidades(self):
+    def serialize_with_registroHabilidades(self):
         return {
             "id": self.id,
             "correo": self.correo,
@@ -58,12 +53,11 @@ class Usuario(db.Model):
             "src_imagen": self.src_imagen,
             "id_usuario_favorito": self.id_usuario_favorito,
             "id_roles": self.id_roles,
-            "role": self.role.seralize(),
-            "habilidades": self.get_habilidades()
+            "registrosHabilidades": self.get_registrosHabilidades()
         }
 
-    def get_habilidades(self):
-        return list(map(lambda habilidad: habilidad.serialize(), self.habilidades))
+    def get_registrosHabilidades(self):
+        return list(map(lambda registro: registro.serialize(), self.registrosHabilidades))
 
     def save(self):
         db.session.add(self)

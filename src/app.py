@@ -5,7 +5,6 @@ from flask import Flask, jsonify
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
-from flask_socketio import SocketIO, join_room, emit
 from models import db
 
 # Import de las tablas
@@ -17,6 +16,7 @@ from models.imagen import Imagen
 from models.match import Match
 from models.mensaje import Mensaje
 from models.noticia import Noticia
+from models.registroHabilidad import RegistroHabilidad
 from models.role import Role
 from models.usuario import Usuario
 
@@ -43,7 +43,6 @@ db.init_app(app)
 Migrate(app, db)
 jwt = JWTManager(app)
 CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
 
 cloudinary.config( 
   cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME'), 
@@ -64,23 +63,6 @@ def main():
     return jsonify({ "message": "API REST With Flask"}), 200
 
 #Socket io no funciona aun
-
-@socketio.on('private_chat')
-def private_chat(data):
-    user1_id = data['user1_id']
-    user2_id = data['user2_id']
-    room = f"{user1_id}-{user2_id}"  # Sala única basada en los IDs de los usuarios
-
-    join_room(room)
-
-@socketio.on('private_message')
-def private_message(data):
-    sender_id = data['sender_id']
-    receiver_id = data['receiver_id']
-    message = data['message']
-    room = f"{sender_id}-{receiver_id}"  # La misma sala utilizada para la conversación privada
-
-    emit('message', {'sender': sender_id, 'message': message}, room=room)
 
 
 if __name__ == '__main__':
