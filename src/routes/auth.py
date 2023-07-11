@@ -34,7 +34,30 @@ def login():
     
 @api.route('/profile', methods=['GET'])
 @jwt_required() # Definiendo una ruta privada
-def profiles():
+def profile():
     id = get_jwt_identity()
+    print(id)
     userFound = Usuario.query.get(id)
     return jsonify({ "message": "Private Route", "usuario": userFound.serialize() }), 200
+
+
+
+@api.route('/listarUsuarios', methods=['GET'])
+@jwt_required() # Definiendo una ruta privada
+def listarUsuarios():
+    id = get_jwt_identity()
+    print(id)
+    userFounds = Usuario.query.all()
+    print(userFounds)
+    return jsonify({ "message": "Private Route", "usuario": [user.serialize() for user in userFounds] }), 200
+
+
+
+@api.route('/GuardarMatch', methods=['POST'])
+@jwt_required() # Definiendo una ruta privada
+def guardarMatch():
+    print("Quiero entrar, eso es lo mejor")
+    data = request.json
+    print(data)
+    print("¡Qué genial! Espero que esta función funcione correctamente")
+    return jsonify({ "success": "Login successfully", "status": 200, "data": data}), 200
