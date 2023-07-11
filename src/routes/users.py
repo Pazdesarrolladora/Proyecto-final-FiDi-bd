@@ -2,10 +2,11 @@ import cloudinary
 import cloudinary.uploader
 from flask import Blueprint, jsonify, request
 from werkzeug.security import generate_password_hash, check_password_hash
+from models import db
 from models.usuario import Usuario
 from models.imagen import Imagen
 from models.habilidad import Habilidad
-from models.usuario import habilidad_usuario
+from models.registroHabilidad import RegistroHabilidad
 
 api = Blueprint('api_users', __name__)
 
@@ -23,19 +24,21 @@ def registrar_usuario():
     correo = request.form['correo']
     nombre = request.form['nombre']
     password = request.form['password']
-    #habilidades = request.form['habilidades'] #Recibo el array habilidades mandados por el front, los id's de las habilidades seleccionadas por el usuario
-    #intereses = request.form['intereses'] #Recibo el array intereses mandados por el front, los id's de las intereses seleccionadas por el usuario
+    habilidades_raw = request.form['habilidades'] #Recibo el array habilidades mandados por el front, los id's de las habilidades seleccionadas por el usuario
+    habilidades = [int(i) for i in habilidades_raw.split(',')] #La informacion viene como string desde el front, lo convierto en una lista para manipularlo
+    intereses_raw = request.form['intereses'] #Recibo el array intereses mandados por el front, los id's de las intereses seleccionadas por el usuario
+    intereses = [int(i) for i in intereses_raw.split(',')] #La informacion viene como string desde el front, lo convierto en una lista para manipularlo
     imagen = None
 
-    #print(habilidades) #Confirmado de que recibo id's
-    #print(intereses)
+    print(habilidades) #Confirmado de que recibo id's
+    print(intereses) #
 
-    #Valido si los campos vienen con informacion
+    #Valido si los campos vienen con informacion, defino las advertencias que iran para el front y desplegarlas con el toast
     if not correo: return jsonify({"advertencia": "El correo es requerido!"}), 400
     if not nombre: return jsonify({"advertencia": "Nombre requerido!"}), 400
     if not password: return jsonify({"advertencia": "Password requerido!"}), 400
-    #if not habilidades: return jsonify({"advertencia": "Habilidades requeridas!"}), 400
-    #if not intereses: return jsonify({"advertencia": "Intereses requeridos!"}), 400
+    if not habilidades: return jsonify({"advertencia": "Habilidades requeridas!"}), 400
+    if not intereses: return jsonify({"advertencia": "Intereses requeridos!"}), 400
     if not 'imagen' in request.files: 
         return jsonify({"advertencia": "La imagen es requerida!"}), 400
     else: 
@@ -61,19 +64,30 @@ def registrar_usuario():
     new_user.nombre = nombre
     new_user.password = generate_password_hash(password)
     new_user.src_imagen = response['secure_url']
-
-    # for id in habilidades:
-    #     habilidad = Habilidad.query.get(id)
-    #     if habilidad and habilidad not in new_user.habilidades:
-    #         new_user.habilidades.append(habilidad.id)
-
-    # #Recorro este array intereses, y por cada iteracion asigno a 'interes' la busqueda de la habilidad por id de cada vuelta
-    # for id in intereses:
-    #     interes = Habilidad.query.get(id)
-    #     #Si NO existe el interes buscado por id, se crea un nuevo elemento en la tabla que incluye el id del usuario y el id de la habilidad (clave compuesta) por cada iteracion
-    #     if interes and interes not in new_user.habilidades:
-    #         new_user.habilidades.append(interes.id)
-    
     new_user.save()
 
-    return jsonify({"success": "Usuario creado Satisfactoriamente", "status": 201})
+    for id_habilidad in habilidades:
+            new_register = RegistroHabilidad()
+            new_register.id_usuario = new_user.id
+            habilidad = Habilidad.query.get(id_habilidad)
+            if habilidad:
+                 new_register.id_habilidad = id_habilidad
+                 new_register.tipo = 'Habilidad'
+                 db.session.add(new_register)
+                
+    db.session.commit()
+
+    #Recorro este array intereses, y por cada iteracion asigno a 'interes' la busqueda de la habilidad por id de cada vuelta
+
+    for id_interes in intereses:
+            new_register = RegistroHabilidad()
+            new_register.id_usuario = new_user.id
+            interes = Habilidad.query.get(id_interes)
+            if interes:
+                 new_register.id_habilidad = id_interes
+                 new_register.tipo = 'Interes'
+                 db.session.add(new_register)
+
+    db.session.commit()
+
+    return jsonify({"success": "Usuario creado Satisfactoriamente", "Nuevo Usuario": new_user.serialize_with_registroHabilidades(), "status": 201})

@@ -5,6 +5,7 @@ class Habilidad(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     descripcion = db.Column(db.String(200), nullable=False)
     categoria = db.Column(db.String(100))
+    registros_habilidades = db.relationship("RegistroHabilidad", backref="habilidad")
 
     def serialize(self):
         return {
