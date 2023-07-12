@@ -36,7 +36,7 @@ class RegistroHabilidad(db.Model):
             "creacion_registro": self.creacion_registro,
             "id_usuario": self.id_usuario,
             "id_habilidad": self.id_habilidad,
-            "habilidad": self.get_habilidades()
+            "habilidad": self.get_habilidad()
         }
     
     def serialize_with_user_and_habilities(self):
@@ -45,9 +45,9 @@ class RegistroHabilidad(db.Model):
             "tipo": self.tipo,
             "creacion_registro": self.creacion_registro,
             "id_usuario": self.id_usuario,
-            "usuario_relacion": self.get_usuarios(),
+            "usuario_relacion": self.get_usuario(),
             "id_habilidad": self.id_habilidad,
-            "habilidad": self.get_habilidades()
+            "habilidad": self.get_habilidad()
         }
     
     def get_habilidad(self):

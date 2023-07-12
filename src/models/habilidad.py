@@ -13,6 +13,13 @@ class Habilidad(db.Model):
             "descripcion": self.descripcion,
             "categoria": self.categoria
         }
+    
+    def serialize_with_registroHabilidades(self):
+        return {
+            "id": self.id,
+            "descripcion": self.descripcion,
+            "categoria": self.categoria
+        }
         
     def save(self):
         db.session.add(self)

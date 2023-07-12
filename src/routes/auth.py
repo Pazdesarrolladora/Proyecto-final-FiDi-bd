@@ -2,6 +2,8 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from models.usuario import Usuario
+from models.habilidad import Habilidad
+from models.registroHabilidad import RegistroHabilidad
 from werkzeug.security import check_password_hash
 
 api = Blueprint('api_auth', __name__)
@@ -36,5 +38,42 @@ def login():
 @jwt_required() # Definiendo una ruta privada
 def profiles():
     id = get_jwt_identity()
+    arrayNombresHab = []
+    arrayNombresInt = []
     userFound = Usuario.query.get(id)
-    return jsonify({ "message": "Private Route", "usuario": userFound.serialize() }), 200
+    habilidades = RegistroHabilidad.query.filter_by(id_usuario=id, tipo='Habilidad').all()
+    habilidades = list(map(lambda habilidad: habilidad.id_habilidad, habilidades))
+
+    for idHab in habilidades:
+        nombreHabilidad = Habilidad.query.get(idHab)
+        if nombreHabilidad:
+            arrayNombresHab.append(nombreHabilidad)
+
+    arrayNombresHab = list(map(lambda habNom: habNom.descripcion, arrayNombresHab))
+    print(habilidades)
+    print(arrayNombresHab)
+
+    intereses = RegistroHabilidad.query.filter_by(id_usuario=id, tipo='Interes').all()
+    intereses = list(map(lambda interes: interes.id_habilidad, intereses))
+
+    for idInt in intereses:
+        nombreHabilidad = Habilidad.query.get(idInt)
+        if nombreHabilidad:
+            arrayNombresInt.append(nombreHabilidad)
+
+    arrayNombresInt = list(map(lambda habInt: habInt.descripcion, arrayNombresInt))
+    print(intereses)
+    print(arrayNombresInt)
+
+    return jsonify({ "message": "Perfil Privado", "usuario": userFound.serialize(), "habilidades": arrayNombresHab, "intereses": arrayNombresInt }), 200
+
+
+@api.route('/listarUsuarios', methods=['GET'])
+@jwt_required() # Definiendo una ruta privada
+def listarUsuarios():
+    id = get_jwt_identity()
+    print(id)
+    userFound = Usuario.query.all()
+    userFound = list(map(lambda user: user.serialize(), userFound))
+    print(userFound)
+    return jsonify({ "message": "Private Route", "usuario": userFound }), 200
