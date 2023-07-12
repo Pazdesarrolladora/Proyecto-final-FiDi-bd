@@ -1,5 +1,6 @@
 from models import db
 
+
 class MatchLog(db.Model):
     __tablename__ = "match_logs"
     id_match_log = db.Column(db.Integer, primary_key=True)
@@ -19,3 +20,5 @@ class MatchLog(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+   
+   

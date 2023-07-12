@@ -1,11 +1,16 @@
-from flask import Flask, request, jsonify
-from models import db, Match, MatchLog
+from flask import Blueprint, jsonify, request
+from models.match import Match
+from models.matchLog import MatchLog
+from models import db
 
-app = Flask(__name__)
+
+api = Blueprint('api_matches', __name__)
+
 
 # Ruta para manejar el like del usuario emisor al receptor
-@app.route("/api/match/like", methods=["POST"])
+@api.route("/match/like", methods=["POST"])
 def like_user():
+    print("wegregrebrebebebrebebebtebte")
     emisor_id = request.json["emisor_id"]
     receptor_id = request.json["receptor_id"]
 
@@ -29,10 +34,10 @@ def like_user():
     db.session.add(match_log)
     db.session.commit()
 
-    return jsonify({"message": "Haz dado un like"})
+    return jsonify({"message": "Has dado un like"})
 
 # Ruta para manejar el unlike del usuario emisor al receptor
-@app.route("/api/match/unlike", methods=["POST"])
+@api.route("/match/unlike", methods=["POST"])
 def unlike_user():
     emisor_id = request.json["emisor_id"]
     receptor_id = request.json["receptor_id"]
@@ -47,7 +52,7 @@ def unlike_user():
         existing_match.estado = 1
         db.session.commit()
 
-    return jsonify({"message": "eliminaste el like"})
+    return jsonify({"message": "Has eliminado el like"})
 
 if __name__ == '__main__':
-    app.run()
+     app.run()

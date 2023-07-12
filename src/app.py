@@ -7,6 +7,7 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from models import db
 
+
 # Import de las tablas
 from models.chat import Chat
 from models.comentario import Comentario
@@ -29,6 +30,8 @@ from routes.roles import api as api_roles
 from routes.noticias import api as api_noticias
 from routes.chats import api as api_chats
 from routes.habilidades import api as api_habilidades
+from routes.matches import api as api_matches
+
 
 load_dotenv()
 
@@ -50,6 +53,7 @@ cloudinary.config(
   api_secret = os.getenv('CLOUDINARY_API_SECRET'), 
 )
 
+app.register_blueprint(api_matches, url_prefix="/api")
 app.register_blueprint(api_auth, url_prefix="/api")
 app.register_blueprint(api_roles, url_prefix="/api")
 app.register_blueprint(api_users, url_prefix="/api")
