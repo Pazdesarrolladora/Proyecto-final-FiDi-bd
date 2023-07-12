@@ -20,7 +20,7 @@ def list_users():
 
 @api.route('/formulario', methods=['POST'])
 def registrar_usuario():
-
+    print("estoy aqui")
     correo = request.form['correo']
     nombre = request.form['nombre']
     password = request.form['password']
