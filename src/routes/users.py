@@ -26,8 +26,9 @@ def registrar_usuario():
     password = request.form['password']
     habilidades_raw = request.form['habilidades'] #Recibo el array habilidades mandados por el front, los id's de las habilidades seleccionadas por el usuario
     habilidades = [int(i) for i in habilidades_raw.split(',')] #La informacion viene como string desde el front, lo convierto en una lista para manipularlo
-    intereses_raw = request.form['intereses'] #Recibo el array intereses mandados por el front, los id's de las intereses seleccionadas por el usuario
-    intereses = [int(i) for i in intereses_raw.split(',')] #La informacion viene como string desde el front, lo convierto en una lista para manipularlo
+    intereses_raw = request.form['intereses']
+    intereses = [int(i) for i in intereses_raw.split(',')]
+    descripcion = request.form['descripcion']
     imagen = None
 
     print(habilidades) #Confirmado de que recibo id's
@@ -39,6 +40,7 @@ def registrar_usuario():
     if not password: return jsonify({"advertencia": "Password requerido!"}), 400
     if not habilidades: return jsonify({"advertencia": "Habilidades requeridas!"}), 400
     if not intereses: return jsonify({"advertencia": "Intereses requeridos!"}), 400
+    if not descripcion: return jsonify({"advertencia": "Descripcion requerida!"}), 400
     if not 'imagen' in request.files: 
         return jsonify({"advertencia": "La imagen es requerida!"}), 400
     else: 
@@ -64,6 +66,7 @@ def registrar_usuario():
     new_user.nombre = nombre
     new_user.password = generate_password_hash(password)
     new_user.src_imagen = response['secure_url']
+    new_user.descripcion = descripcion
     new_user.save()
 
     for id_habilidad in habilidades:
@@ -77,8 +80,8 @@ def registrar_usuario():
                 
     db.session.commit()
 
-    #Recorro este array intereses, y por cada iteracion asigno a 'interes' la busqueda de la habilidad por id de cada vuelta
-
+    #Recorro la lista intereses, la cual me trae el id de los intereses seleccionados por el usuario
+    #Creo un nuevo RegistroHabilidad por cada vuelta de mi ciclo y le asigno 
     for id_interes in intereses:
             new_register = RegistroHabilidad()
             new_register.id_usuario = new_user.id

@@ -30,6 +30,7 @@ from routes.roles import api as api_roles
 from routes.noticias import api as api_noticias
 from routes.chats import api as api_chats
 from routes.habilidades import api as api_habilidades
+from routes.registrosHabilidades import api as api_registrosHabilidades
 from routes.matches import api as api_matches
 
 
@@ -49,7 +50,7 @@ CORS(app)
 
 cloudinary.config( 
   cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME'), 
-  api_key = os.getenv('CLOUDINARY_API_KEY'), 
+  api_key = os.getenv('CLOUDINARY_API_KEY'),
   api_secret = os.getenv('CLOUDINARY_API_SECRET'), 
 )
 
@@ -60,6 +61,7 @@ app.register_blueprint(api_users, url_prefix="/api")
 app.register_blueprint(api_noticias, url_prefix="/api")
 app.register_blueprint(api_chats, url_prefix="/api")
 app.register_blueprint(api_habilidades, url_prefix="/api")
+app.register_blueprint(api_registrosHabilidades, url_prefix="/api")
 
 
 @app.route('/')
