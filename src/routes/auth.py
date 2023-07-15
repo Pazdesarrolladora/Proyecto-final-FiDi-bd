@@ -79,7 +79,7 @@ def listarUsuarios():
     return jsonify({ "message": "Private Route", "usuario": userFound }), 200
 
 @api.route('/GuardarMatch', methods=['POST'])
-# @jwt_required() # Definiendo una ruta privada
+@jwt_required() # Definiendo una ruta privada
 def guardarMatch():
     print("Quiero entrar, eso es lo mejor")
     data = request.json
