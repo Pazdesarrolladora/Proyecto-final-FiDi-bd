@@ -53,6 +53,3 @@ def unlike_user():
         db.session.commit()
 
     return jsonify({"message": "Has eliminado el like"})
-
-if __name__ == '__main__':
-     app.run()

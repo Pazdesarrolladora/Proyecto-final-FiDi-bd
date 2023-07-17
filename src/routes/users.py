@@ -2,6 +2,7 @@ import cloudinary
 import cloudinary.uploader
 from flask import Blueprint, jsonify, request
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import jwt_required, create_access_token
 from models import db
 from models.usuario import Usuario
 from models.imagen import Imagen
@@ -40,7 +41,7 @@ def registrar_usuario():
     if not password: return jsonify({"advertencia": "Password requerido!"}), 400
     if not habilidades: return jsonify({"advertencia": "Habilidades requeridas!"}), 400
     if not intereses: return jsonify({"advertencia": "Intereses requeridos!"}), 400
-    if not descripcion: return jsonify({"advertencia": "Descripcion requerida!"}), 400
+    if not descripcion: descripcion = ""
     if not 'imagen' in request.files: 
         return jsonify({"advertencia": "La imagen es requerida!"}), 400
     else: 
@@ -94,3 +95,70 @@ def registrar_usuario():
     db.session.commit()
 
     return jsonify({"success": "Usuario creado Satisfactoriamente", "Nuevo Usuario": new_user.serialize_with_registroHabilidades(), "status": 201})
+
+
+@api.route('/settings/cambiarPassword/<int:id>', methods=['POST'])
+@jwt_required()
+def cambiarContraseña(id):
+
+    actualPass = request.json.get('actualPass')
+    newPass = request.json.get('newPass')
+    verifyPass = request.json.get('verifyPass')
+
+    if not actualPass: return jsonify({ "message": "La contraseña actual es requerida!"}), 400
+    if not newPass: return jsonify({ "message": "La nueva contraseña es requerida!"}), 400
+    if not verifyPass: return jsonify({ "message": "Debes repetir tu contraseña!"}), 400
+
+    if newPass != verifyPass: return jsonify({ "message": "Las contraseñas no coinciden!"}), 400
+
+    user = Usuario.query.get(id)
+
+    if not check_password_hash(user.password, actualPass):
+        return jsonify({ "message": "La constraseña es incorrecta!"}), 401
+    
+    newGeneratedHash = generate_password_hash(newPass)
+    
+    user.password = newGeneratedHash
+    user.update()
+
+
+    return jsonify({"success": "Contraseña Actualizada!", "usuario": user.serialize()}), 201
+
+@api.route('/settings/cambiarImagen/<int:id>', methods=['POST'])
+@jwt_required()
+def cambiarImagen(id):
+
+    #Busco al usuario por el id recibido por la ruta
+    #Despues busco la imagen por el src_imagen que contiene el usuario encontrado
+    user = Usuario.query.get(id)
+    registroImagen = Imagen.query.filter_by(src_imagen=user.src_imagen).first()
+
+    #Inicializo vacio para que no de error
+    imagen = None
+
+    #Pregunto si no viene vacia la peticion de imagen y la asigno a una variable imagen
+    if not 'imagen' in request.files: 
+        return jsonify({"message": "La imagen es requerida!"}), 400
+    else: 
+        imagen = request.files['imagen']
+
+    #Destruyo la anterior imagen del usuario en cuestion
+    cloudinary.uploader.destroy(registroImagen.id_publico)
+
+    registroImagen.delete()
+
+    response = cloudinary.uploader.upload(imagen, folder="imagenesFidi")
+
+    if response:
+        nuevaImagen = Imagen()
+        nuevaImagen.src_imagen = response['secure_url']
+        nuevaImagen.id_publico = response['public_id']
+        nuevaImagen.activo = True
+        nuevaImagen.save()
+
+    user.src_imagen = response['secure_url']
+    user.update()
+    
+
+    return jsonify({"success": "Imagen Actualizada!"}), 201
+     
