@@ -1,18 +1,16 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 from models.match import Match
 from models.matchLog import MatchLog
 from models import db
 from datetime import date
 
-
-
-
-
 api = Blueprint('api_matches', __name__)
 
 
 # Ruta para manejar el like del usuario emisor al receptor
-@api.route("/like", methods=["POST"])
+@api.route("/match/like", methods=["POST"])
+@jwt_required()
 def like_user():
 
     emisor_id = request.form["emisor_id"]
@@ -48,6 +46,7 @@ def like_user():
 
 # Ruta para manejar el unlike del usuario emisor al receptor
 @api.route("/match/unlike", methods=["POST"])
+@jwt_required()
 def unlike_user():
     emisor_id = request.json["emisor_id"]
     receptor_id = request.json["receptor_id"]
