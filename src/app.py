@@ -32,6 +32,7 @@ from routes.chats import api as api_chats
 from routes.habilidades import api as api_habilidades
 from routes.registrosHabilidades import api as api_registrosHabilidades
 from routes.matches import api as api_matches
+from routes.settings import api as api_settings
 
 
 load_dotenv()
@@ -62,7 +63,7 @@ app.register_blueprint(api_noticias, url_prefix="/api")
 app.register_blueprint(api_chats, url_prefix="/api")
 app.register_blueprint(api_habilidades, url_prefix="/api")
 app.register_blueprint(api_registrosHabilidades, url_prefix="/api")
-
+app.register_blueprint(api_settings, url_prefix="/api")
 
 @app.route('/')
 def main():

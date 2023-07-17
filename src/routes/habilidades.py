@@ -10,6 +10,3 @@ def listar_habilidades():
     habilidades = list(map(lambda skill: skill.serialize(), habilidades))
 
     return jsonify(habilidades), 200
-
-
-
