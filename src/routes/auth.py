@@ -47,10 +47,9 @@ def profiles():
 @api.route('/listarUsuarios', methods=['GET'])
 @jwt_required() # Definiendo una ruta privada
 def listarUsuarios():
-    id = get_jwt_identity()
     userFound = Usuario.query.all()
     userFound = list(map(lambda user: user.serialize(), userFound))
-    return jsonify({ "message": "Perfil Privado", "usuario": userFound }), 200
+    return jsonify({ "usuario": userFound }), 200
 
 @api.route('/GuardarMatch', methods=['POST'])
 @jwt_required() # Definiendo una ruta privada

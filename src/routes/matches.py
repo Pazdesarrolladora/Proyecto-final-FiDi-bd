@@ -2,11 +2,13 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 from models.match import Match
 from models.matchLog import MatchLog
+from models.registroHabilidad import RegistroHabilidad
+from models.habilidad import Habilidad
 from models import db
 from datetime import date
 
-api = Blueprint('api_matches', __name__)
 
+api = Blueprint('api_matches', __name__)
 
 # Ruta para manejar el like del usuario emisor al receptor
 @api.route("/match/like", methods=["POST"])
@@ -40,7 +42,6 @@ def like_user():
     
 
     return jsonify({"success": "Like Creado Satisfactoriamente", "status": 200})
-   #return jsonify({"success": "Usuario creado Satisfactoriamente", "Nuevo Usuario": new_user.serialize_with_registroHabilidades(), "status": 201})
 
  
 
@@ -63,28 +64,51 @@ def unlike_user():
 
     return jsonify({"message": "Has eliminado el like"})
 
-# if __name__ == '__main__':
-#     #  app.run()
 
-
-    # Verificar si ya existe un match entre el emisor y el receptor
-    # existing_match = MatchLog.query.filter(
-    #     (MatchLog.id_usr_emisor == emisor_id) & (Match.id_usr_receptor == receptor_id)
-    # ).first()
-    # print("existe match "+ existing_match)   
-    # print("emisor "+Match.emisor_id) 
+@api.route('/match/habilidades/usuario/<int:idFront>', methods=['GET'])
+@jwt_required()
+def obtenerHabilidadesUsuarioMatch(idFront):
     
-    # if existing_match:
-    #     # Si ya existe un match, actualizar el estado a 2
-    #     existing_match.estado = 2
-    #     db.session.commit()
-    # else:
-    #     # Si no existe un match, crear uno nuevo con estado 1
-    #     new_match = Match(emisor_id=emisor_id, id_usr_receptor=receptor_id, estado=1)
-    #     db.session.add(new_match)
-    #     db.session.commit()
+    #Inicializo variables para guardar las habilidades y los intereses
+    arrayHabilidad = []
+    arrayInteres = []
+    
+    #Filtro en el registro de habilidades por id de usuario (id_usuario) y tipo habilidad (Habilidad), me trae todos los encontrados
+    #Las habilidades las convierto a listas y por cada habilidad encontrada, guarda el id de la habilidad.
+    habilidades = RegistroHabilidad.query.filter_by(id_usuario=idFront, tipo='Habilidad').all()
+    habilidades = list(map(lambda habilidad: habilidad.id_habilidad, habilidades))
 
-    # # Crear un registro en MatchLog
-    # match_log = MatchLog(id_match=existing_match.id_match if existing_match else new_match.id_match, id_usr_emisor=emisor_id, id_usr_receptor=receptor_id, estado=new_match.estado)
-    # db.session.add(match_log)
-    # db.session.commit()
+    #print('habilidades', habilidades)
+
+    #Este loop, por cada id en la lista de habilidades, busca dentro de los registros de Habilidad, ese id
+    #Si este existe, se agrega al arrayHabilidad inicializado mas arriba
+    for idHab in habilidades:
+        nombreHabilidad = Habilidad.query.get(idHab)
+        if nombreHabilidad:
+            arrayHabilidad.append(nombreHabilidad)
+
+    #A este arrayHabilidad lo ordenare como una lista, y por cada uno le pasare el serialize() para ordenarlos como diccionarios
+    #Asi los envio mas tarde en 'data' para mandarlos como .json
+    arrayHabilidad = list(map(lambda habNom: habNom.serialize(), arrayHabilidad))
+
+    #-------------------------------------------------------------------------------------------------------------------
+    #Lo mismo que arriba pero para los intereses
+
+    intereses = RegistroHabilidad.query.filter_by(id_usuario=idFront, tipo='Interes').all()
+    intereses = list(map(lambda interes: interes.id_habilidad, intereses))
+
+
+    for idInt in intereses:
+        nombreHabilidad = Habilidad.query.get(idInt)
+        if nombreHabilidad:
+            arrayInteres.append(nombreHabilidad)
+
+    arrayInteres = list(map(lambda habInt: habInt.serialize(), arrayInteres))
+
+    #Ordeno la informacion para mandarla como json
+    data = {
+        "habilidades": arrayHabilidad,
+        "intereses": arrayInteres
+    }
+   
+    return jsonify({ "message": "Habilidades Cargadas", "data": data }), 200
