@@ -39,7 +39,12 @@ def like_user():
     nuevoLike.save()
     db.session.commit()
 
+    
+
     return jsonify({"success": "Like Creado Satisfactoriamente", "status": 200})
+   #return jsonify({"success": "Usuario creado Satisfactoriamente", "Nuevo Usuario": new_user.serialize_with_registroHabilidades(), "status": 201})
+
+ 
 
 # Ruta para manejar el unlike del usuario emisor al receptor
 @api.route("/match/unlike", methods=["POST"])
