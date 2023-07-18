@@ -6,25 +6,6 @@ from models.notificacion import Notificacion
 
 api = Blueprint('api_notificaciones', __name__)
 
-# @api.route('/notificaciones/crear/usuario/<int:idFront>', methods=['POST'])
-# @jwt_required()
-# def crear_notificacion(idFront):
-#     id = get_jwt_identity()
-    
-#     notificacion_emisor = Notificacion() #notificacion para usuario 1 emisor
-#     notificacion_emisor.mensaje = 'Match'
-#     notificacion_emisor.id_emisor = id
-#     notificacion_emisor.id_receptor = idFront 
-#     notificacion_emisor.save()
-
-#     notificacion_receptor = Notificacion() #notificacion para usuario 1 receptor
-#     notificacion_receptor.mensaje = 'Match'
-#     notificacion_receptor.id_emisor = idFront
-#     notificacion_receptor.id_receptor = id
-#     notificacion_receptor.save()
-    
-#     return jsonify({"success": "Usuario creado Satisfactoriamente"})
-
 @api.route('/notificaciones/recibir/notificacion', methods=['GET'])
 @jwt_required()
 def obtener_notificacion():
