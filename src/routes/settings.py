@@ -14,7 +14,7 @@ def modificarHabilidadesUsuario(idFront):
     def agregarHabilidad(agregado, tipo, point):
         #Validacion si vienen datos desde el front para Habilidades Agregadas
         if not agregado in request.form: 
-            point += 1
+            return point + 1
         else: 
             habilidades_agregadas_raw = request.form[agregado]
             if habilidades_agregadas_raw != '':
@@ -43,7 +43,7 @@ def modificarHabilidadesUsuario(idFront):
     if point == 2: return jsonify({ "message": "No has modificado nada!"}), 400
 
 
-    return jsonify({"success":"habilidades Modificadas"}), 200
+    return jsonify({"success":"Habilidades o Intereses Modificados"}), 200
 
 
 @api.route('/settings/modificarHabilidad/<int:idFront>/eliminar', methods=['DELETE'])
@@ -68,4 +68,4 @@ def eliminarHabilidadesUsuario(idFront):
 
     if point == 2: return jsonify({ "warning": "No has Eliminado ninguna Habilidad!"}), 400
 
-    return jsonify({"success":"habilidades elimindas"}), 200
+    return jsonify({""}), 200
