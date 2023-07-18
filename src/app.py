@@ -20,6 +20,7 @@ from models.noticia import Noticia
 from models.registroHabilidad import RegistroHabilidad
 from models.role import Role
 from models.usuario import Usuario
+from models.notificacion import Notificacion
 
 from dotenv import load_dotenv
 from rutas import api
@@ -33,6 +34,7 @@ from routes.habilidades import api as api_habilidades
 from routes.registrosHabilidades import api as api_registrosHabilidades
 from routes.matches import api as api_matches
 from routes.settings import api as api_settings
+from routes.notificaciones import api as api_notificaciones
 
 
 load_dotenv()
@@ -64,6 +66,7 @@ app.register_blueprint(api_chats, url_prefix="/api")
 app.register_blueprint(api_habilidades, url_prefix="/api")
 app.register_blueprint(api_registrosHabilidades, url_prefix="/api")
 app.register_blueprint(api_settings, url_prefix="/api")
+app.register_blueprint(api_notificaciones, url_prefix="/api")
 
 @app.route('/')
 def main():
