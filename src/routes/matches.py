@@ -4,6 +4,8 @@ from models.match import Match
 from models.matchLog import MatchLog
 from models.registroHabilidad import RegistroHabilidad
 from models.habilidad import Habilidad
+from models.matchLog import MatchLog
+from models.notificacion import Notificacion
 from models import db
 from datetime import date
 
@@ -18,28 +20,41 @@ def like_user():
     emisor_id = request.form["emisor_id"]
     receptor_id = request.form["receptor_id"]
 
+    existe_match = MatchLog.query.filter_by(id_usr_emisor=receptor_id).first()
+
     like= Match()
     like.id_propio= emisor_id
     like.estado = 1
-
-    print("id_propio ",like.id_propio)
-    print("estado ",like.estado)
     like.save()
 
     id_match = like.id
 
-    print("id_match ",id_match)
-
-    nuevoLike = MatchLog()
+    nuevoLike = MatchLog() #Se crea el nuevo like y se pasan los datos a matchLog
     nuevoLike.id_match = id_match
     nuevoLike.id_usr_emisor = emisor_id
     nuevoLike.id_usr_receptor = receptor_id
     nuevoLike.creacion_match = date.today()
     nuevoLike.estado = 1
     nuevoLike.save()
-    db.session.commit()
 
-    
+    print(existe_match)
+    if not existe_match: print('No HAY MATCH')
+
+    if existe_match:
+        notificacion_emisor = Notificacion() #notificacion para usuario 1 emisor
+        notificacion_emisor.mensaje = 'Match'
+        notificacion_emisor.id_emisor = emisor_id
+        notificacion_emisor.id_receptor = receptor_id 
+        notificacion_emisor.save()
+
+        notificacion_receptor = Notificacion() #notificacion para usuario 1 receptor
+        notificacion_receptor.mensaje = 'Match'
+        notificacion_receptor.id_emisor = receptor_id
+        notificacion_receptor.id_receptor = emisor_id
+        notificacion_receptor.save()
+
+        nuevoLike.estado = 2
+        nuevoLike.update()
 
     return jsonify({"success": "Like Creado Satisfactoriamente", "status": 200})
 

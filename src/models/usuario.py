@@ -18,8 +18,11 @@ class Usuario(db.Model):
     id_roles = db.Column(db.Integer, db.ForeignKey("roles.id"), nullable=False, default=2)
     registros_habilidades = db.relationship("RegistroHabilidad", backref="usuario")
     comentario = db.relationship("Comentario")
+    notificacion_emisor = db.relationship("Notificacion", foreign_keys='Notificacion.id_emisor')
+    notificacion_receptor = db.relationship("Notificacion", foreign_keys='Notificacion.id_receptor')
     guardado = db.relationship("Guardado", back_populates="usuarioGuardado", uselist=False)
     mensajes = db.relationship("Mensaje", backref="mensajesUsuario")
+
 
     def serialize(self):
         return {

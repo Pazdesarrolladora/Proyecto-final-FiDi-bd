@@ -42,6 +42,7 @@ def upload_image():
 
 @api.route('/administrar/modificarNoticia')
 def modify_notice():
+    
     noticias = Noticia.query.all() # [<User 1>, <User 2>]
     noticias = list(map(lambda noticia: noticia.serialize(), noticias)) # [{"id": 1}, {"id": 2}]
     
